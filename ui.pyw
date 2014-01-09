@@ -1,10 +1,44 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from PyQt4 import QtGui, QtCore
 import sys
 import datetime
+from PyQt4 import QtGui, QtCore
 from ui_querywindow import Ui_QueryWindow
-from train import Query
+from ui_pricedialog import Ui_PriceDialog
+from train import Query, Ticket
+
+
+class PriceDialog(QtGui.QDialog, Ui_PriceDialog):
+    def __init__(self, parent, price):
+        super(PriceDialog, self).__init__(parent)
+        self.setupUi(self)
+
+        # 设置表头
+        tableHeaders = (
+            '商务座', '特等座', '一等座', '二等座', '高级软卧', '软卧',
+            '硬卧', '软座', '硬座', '无座',
+        )
+        self.tableWidget.setRowCount(len(tableHeaders))
+        self.tableWidget.setVerticalHeaderLabels(tableHeaders)
+        self.tableWidget.setColumnCount(1)
+        tableItemData = [
+            price.get('A9', '--'),
+            price.get('P', '--'),
+            price.get('M', '--'),
+            price.get('O', '--'),
+            price.get('A6', '--'),
+            price.get('A4', '--'),
+            price.get('A3', '--'),
+            '--',
+            price.get('A1', '--'),
+            price.get('WZ', '--'),
+        ]
+
+        for row in range(len(tableItemData)):
+            tableItem = QtGui.QTableWidgetItem(tableItemData[row])
+            tableItem.setTextAlignment(QtCore.Qt.AlignCenter)
+            #tableItem.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.tableWidget.setItem(row, 0, tableItem)
 
 
 class QueryWindow(QtGui.QMainWindow, Ui_QueryWindow):
@@ -15,13 +49,17 @@ class QueryWindow(QtGui.QMainWindow, Ui_QueryWindow):
         self.queryButton.clicked.connect(self.query)
         self.aboutAction.triggered.connect(self.showAbout)
 
+        self.trains = None
+        self.train_date = None
+
     def query(self):
         self.statusBar.showMessage('查询中，请稍候……')
         query = Query(
             self.fromStationNameEdit.text(), self.toStationNameEdit.text(),
             self.trainDateEdit.text(), self.studentCheckbox.isChecked()
         )
-        trains = query.query_trains()['datas']
+        self.trains = query.query_trains()['datas']
+        self.train_date = self.trainDateEdit.text()
 
         # 设置表头
         tableHeaders = (
@@ -32,8 +70,8 @@ class QueryWindow(QtGui.QMainWindow, Ui_QueryWindow):
         self.tableWidget.setColumnCount(len(tableHeaders))
         self.tableWidget.setHorizontalHeaderLabels(tableHeaders)
 
-        self.tableWidget.setRowCount(len(trains))
-        for (row, train) in enumerate(trains):
+        self.tableWidget.setRowCount(len(self.trains))
+        for (row, train) in enumerate(self.trains):
             tableItemData = [
                 train.get('station_train_code'),
                 train.get('from_station_name'),
@@ -77,8 +115,19 @@ class QueryWindow(QtGui.QMainWindow, Ui_QueryWindow):
         )
         QtGui.QMessageBox.about(self, u'关于', aboutMessage)
 
-    def showPrice(self):
-        pass
+    def showPrice(self, item):
+        train = self.trains[item.row()]
+        ticket = Ticket(
+            train['train_no'], train['from_station_no'],
+            train['to_station_no'], train['seat_types'],
+            self.train_date,
+        )
+        price = ticket.query_price()
+
+        priceDialog = PriceDialog(self, price)
+        priceDialog.setWindowTitle(train['station_train_code'])
+        priceDialog.setModal(True)
+        priceDialog.exec_()
 
 
 if __name__ == '__main__':

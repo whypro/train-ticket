@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'querywindow.ui'
 #
-# Created: Thu Jan 09 21:34:53 2014
+# Created: Thu Jan 09 22:14:51 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
