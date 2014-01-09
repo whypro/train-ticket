@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'querywindow.ui'
 #
-# Created: Thu Jan 09 20:49:40 2014
+# Created: Thu Jan 09 21:34:53 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -93,9 +93,11 @@ class Ui_QueryWindow(object):
         self.tableWidget.setObjectName(_fromUtf8("tableWidget"))
         self.tableWidget.setColumnCount(0)
         self.tableWidget.horizontalHeader().setCascadingSectionResizes(False)
+        self.tableWidget.horizontalHeader().setDefaultSectionSize(80)
         self.tableWidget.horizontalHeader().setHighlightSections(False)
-        self.tableWidget.horizontalHeader().setStretchLastSection(False)
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
         self.tableWidget.verticalHeader().setVisible(False)
+        self.tableWidget.verticalHeader().setCascadingSectionResizes(True)
         self.tableWidget.verticalHeader().setHighlightSections(False)
         self.verticalLayout.addWidget(self.tableWidget)
         self.buttonLayout = QtGui.QHBoxLayout()
@@ -103,6 +105,8 @@ class Ui_QueryWindow(object):
         spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.buttonLayout.addItem(spacerItem4)
         self.queryButton = QtGui.QPushButton(self.centralwidget)
+        self.queryButton.setAutoDefault(True)
+        self.queryButton.setDefault(True)
         self.queryButton.setObjectName(_fromUtf8("queryButton"))
         self.buttonLayout.addWidget(self.queryButton)
         self.closeButton = QtGui.QPushButton(self.centralwidget)
@@ -110,13 +114,30 @@ class Ui_QueryWindow(object):
         self.buttonLayout.addWidget(self.closeButton)
         self.verticalLayout.addLayout(self.buttonLayout)
         QueryWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(QueryWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 23))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
-        QueryWindow.setMenuBar(self.menubar)
+        self.menuBar = QtGui.QMenuBar(QueryWindow)
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 800, 23))
+        self.menuBar.setObjectName(_fromUtf8("menuBar"))
+        self.helpMenu = QtGui.QMenu(self.menuBar)
+        self.helpMenu.setObjectName(_fromUtf8("helpMenu"))
+        self.fileMenu = QtGui.QMenu(self.menuBar)
+        self.fileMenu.setObjectName(_fromUtf8("fileMenu"))
+        QueryWindow.setMenuBar(self.menuBar)
+        self.statusBar = QtGui.QStatusBar(QueryWindow)
+        self.statusBar.setObjectName(_fromUtf8("statusBar"))
+        QueryWindow.setStatusBar(self.statusBar)
+        self.aboutAction = QtGui.QAction(QueryWindow)
+        self.aboutAction.setIconVisibleInMenu(True)
+        self.aboutAction.setObjectName(_fromUtf8("aboutAction"))
+        self.exitAction = QtGui.QAction(QueryWindow)
+        self.exitAction.setObjectName(_fromUtf8("exitAction"))
+        self.helpMenu.addAction(self.aboutAction)
+        self.fileMenu.addAction(self.exitAction)
+        self.menuBar.addAction(self.fileMenu.menuAction())
+        self.menuBar.addAction(self.helpMenu.menuAction())
 
         self.retranslateUi(QueryWindow)
         QtCore.QObject.connect(self.closeButton, QtCore.SIGNAL(_fromUtf8("clicked()")), QueryWindow.close)
+        QtCore.QObject.connect(self.exitAction, QtCore.SIGNAL(_fromUtf8("triggered()")), QueryWindow.close)
         QtCore.QMetaObject.connectSlotsByName(QueryWindow)
 
     def retranslateUi(self, QueryWindow):
@@ -127,5 +148,10 @@ class Ui_QueryWindow(object):
         self.trainDateEdit.setDisplayFormat(_translate("QueryWindow", "yyyy-MM-dd", None))
         self.studentCheckbox.setText(_translate("QueryWindow", "学生票", None))
         self.queryButton.setText(_translate("QueryWindow", "查询", None))
+        self.queryButton.setShortcut(_translate("QueryWindow", "Return", None))
         self.closeButton.setText(_translate("QueryWindow", "关闭", None))
+        self.helpMenu.setTitle(_translate("QueryWindow", "帮助(&H)", None))
+        self.fileMenu.setTitle(_translate("QueryWindow", "文件(&F)", None))
+        self.aboutAction.setText(_translate("QueryWindow", "关于(&A)", None))
+        self.exitAction.setText(_translate("QueryWindow", "退出(&X)", None))
 

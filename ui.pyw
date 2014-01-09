@@ -13,8 +13,10 @@ class QueryWindow(QtGui.QMainWindow, Ui_QueryWindow):
         self.setupUi(self)
         self.trainDateEdit.setDate(datetime.datetime.now())
         self.queryButton.clicked.connect(self.query)
+        self.aboutAction.triggered.connect(self.showAbout)
 
     def query(self):
+        self.statusBar.showMessage('查询中，请稍候……')
         query = Query(
             self.fromStationNameEdit.text(), self.toStationNameEdit.text(),
             self.trainDateEdit.text(), self.studentCheckbox.isChecked()
@@ -60,9 +62,24 @@ class QueryWindow(QtGui.QMainWindow, Ui_QueryWindow):
                 #tableItem.setFlags(QtCore.Qt.ItemIsEnabled)
                 self.tableWidget.setItem(row, col, tableItem)
 
+        self.statusBar.showMessage('查询完毕！')
         # 重设列宽
         # self.tableWidget.resizeColumnsToContents()
         # self.tableWidget.resizeRowsToContents()
+        self.tableWidget.itemDoubleClicked.connect(self.showPrice)
+
+    def showAbout(self):
+        aboutMessage = \
+            '<p><strong>列车查询</strong>&nbsp;{0}&nbsp;\
+            <font color="red"><em>{1}</em></font></p>\
+            <p>版权所有&nbsp;&copy;&nbsp;2014&nbsp;WHYPRO</p>'.format(
+            '0.1.1', 'Alpha'
+        )
+        QtGui.QMessageBox.about(self, u'关于', aboutMessage)
+
+    def showPrice(self):
+        pass
+
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
