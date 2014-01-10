@@ -1,2 +1,2 @@
-pyinstaller ui.pyw --upx-dir upx309w -w -n train-ticket
+pyinstaller ui.pyw --upx-dir upx309w -w -n train-ticket --onefile
 @pause

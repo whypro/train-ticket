@@ -111,7 +111,7 @@ class QueryWindow(QtGui.QMainWindow, Ui_QueryWindow):
             '<p><strong>列车查询</strong>&nbsp;{0}&nbsp;\
             <font color="red"><em>{1}</em></font></p>\
             <p>版权所有&nbsp;&copy;&nbsp;2014&nbsp;WHYPRO</p>'.format(
-            '0.1.1', 'Alpha'
+            '0.1.3', 'Alpha'
         )
         QtGui.QMessageBox.about(self, u'关于', aboutMessage)
 
@@ -126,7 +126,7 @@ class QueryWindow(QtGui.QMainWindow, Ui_QueryWindow):
 
         priceDialog = PriceDialog(self, price)
         priceDialog.setWindowTitle(train['station_train_code'])
-        priceDialog.setModal(True)
+        #priceDialog.setModal(True)
         priceDialog.exec_()
 
 
