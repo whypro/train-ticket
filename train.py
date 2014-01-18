@@ -7,11 +7,16 @@ import re
 from urllib import urlencode
 from urllib2 import urlopen
 import sys
+from myexceptions import NetworkException
+from myexceptions import StationNotFound
 
 
 def get_data(url):
-    u = urlopen(url)
-    data = u.read()
+    try:
+        u = urlopen(url, timeout=30)
+        data = u.read()
+    except:
+        raise NetworkException('网络连接失败')
     try:
         content = data.decode('utf-8')
     except UnicodeDecodeError:
@@ -31,9 +36,15 @@ class Query(object):
 
     def query_trains(self):
         station_names_content = get_data(self.station_names_uri)
-        from_station_telecode = re.findall('%s\|([^|]+)' % self.from_station_name, station_names_content)[0]
-        to_station_telecode = re.findall('%s\|([^|]+)' % self.to_station_name, station_names_content)[0]
-
+        try:
+            from_station_telecode = re.findall('%s\|([^|]+)' % self.from_station_name, station_names_content)[0]
+        except IndexError as e:
+            raise StationNotFound('{0} 站不存在，请核对'.format(self.from_station_name))
+        try:
+            to_station_telecode = re.findall('%s\|([^|]+)' % self.to_station_name, station_names_content)[0]
+        except IndexError as e:
+            raise StationNotFound('{0} 站不存在，请核对'.format(self.to_station_name))
+        
         query_train_data = [
             ('purpose_codes', '0X00' if self.is_student else 'ADULT'),
             ('queryDate', self.train_date),

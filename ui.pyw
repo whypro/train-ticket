@@ -6,11 +6,12 @@ from PyQt4 import QtGui, QtCore
 from ui_querywindow import Ui_QueryWindow
 from ui_pricedialog import Ui_PriceDialog
 from train import Query, Ticket
-
+from myexceptions import NetworkException
+from myexceptions import StationNotFound
 
 class PriceDialog(QtGui.QDialog, Ui_PriceDialog):
     def __init__(self, parent, price):
-        super(PriceDialog, self).__init__(parent)
+        super(PriceDialog, self).__init__(parent=parent)
         self.setupUi(self)
 
         # 设置表头
@@ -48,6 +49,7 @@ class QueryWindow(QtGui.QMainWindow, Ui_QueryWindow):
         self.trainDateEdit.setDate(datetime.datetime.now())
         self.queryButton.clicked.connect(self.query)
         self.aboutAction.triggered.connect(self.showAbout)
+        self.tableWidget.itemDoubleClicked.connect(self.showPrice)
 
         self.trains = None
         self.train_date = None
@@ -58,9 +60,23 @@ class QueryWindow(QtGui.QMainWindow, Ui_QueryWindow):
             self.fromStationNameEdit.text(), self.toStationNameEdit.text(),
             self.trainDateEdit.text(), self.studentCheckbox.isChecked()
         )
-        self.trains = query.query_trains()['datas']
+        try:
+            self.trains = query.query_trains()['datas']
+        except NetworkException as e:
+            print e
+            QtGui.QMessageBox.information(self, '错误', e.value, buttons=QtGui.QMessageBox.Ok, defaultButton=QtGui.QMessageBox.NoButton)
+            self.statusBar.showMessage('')
+            return
+        except StationNotFound as e:
+            print e
+            QtGui.QMessageBox.information(self, '错误', e.value, buttons=QtGui.QMessageBox.Ok, defaultButton=QtGui.QMessageBox.NoButton)
+            self.statusBar.showMessage('')
+            return
+        except KeyError:
+            self.statusBar.showMessage('未找到任何车次！')
+            return
+        
         self.train_date = self.trainDateEdit.text()
-
         # 设置表头
         tableHeaders = (
             '车次', '出发站', '到达站', '出发时间', '到达时间', '历时',
@@ -104,7 +120,7 @@ class QueryWindow(QtGui.QMainWindow, Ui_QueryWindow):
         # 重设列宽
         # self.tableWidget.resizeColumnsToContents()
         # self.tableWidget.resizeRowsToContents()
-        self.tableWidget.itemDoubleClicked.connect(self.showPrice)
+        
 
     def showAbout(self):
         aboutMessage = \
